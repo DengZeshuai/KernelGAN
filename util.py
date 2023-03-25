@@ -230,3 +230,17 @@ def run_zssr(k_2, conf):
         plt.imsave(os.path.join(conf.output_dir_path, 'ZSSR_%s.png' % conf.img_name), sr, vmin=0, vmax=max_val, dpi=1)
         runtime = int(time.time() - start_time)
         print('Completed! runtime=%d:%d\n' % (runtime // 60, runtime % 60) + '~' * 30)
+
+def run_zssr_cubic(conf):
+    """Performs ZSSR with estimated kernel for wanted scale factor"""
+    if conf.do_ZSSR:
+        start_time = time.time()
+        print('~' * 30 + '\nRunning Bicubic ZSSR X%d...' % (4 if conf.X4 else 2))
+        if conf.X4:
+            sr = ZSSR(conf.input_image_path, scale_factor=[[2, 2], [4, 4]], kernels=[None, None], is_real_img=conf.real_image, noise_scale=conf.noise_scale).run()
+        else:
+            sr = ZSSR(conf.input_image_path, scale_factor=2, kernels=None, is_real_img=conf.real_image, noise_scale=conf.noise_scale).run()
+        max_val = 255 if sr.dtype == 'uint8' else 1.
+        plt.imsave(os.path.join(conf.output_dir_path, 'ZSSR_%s.png' % conf.img_name), sr, vmin=0, vmax=max_val, dpi=1)
+        runtime = int(time.time() - start_time)
+        print('Completed! runtime=%d:%d\n' % (runtime // 60, runtime % 60) + '~' * 30)

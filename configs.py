@@ -44,6 +44,7 @@ class Config:
         self.parser.add_argument('--do_ZSSR', action='store_true', help='when activated - ZSSR is not performed')
         self.parser.add_argument('--noise_scale', type=float, default=1., help='ZSSR uses this to partially de-noise images')
         self.parser.add_argument('--real_image', action='store_true', help='ZSSRs configuration is for real images')
+        self.parser.add_argument('--cubic', action='store_true', help='when activated - KernalGAN is not performed')
 
     def parse(self, args=None):
         """Parse the configuration"""
@@ -52,7 +53,7 @@ class Config:
         self.clean_file_name()
         self.set_output_directory()
         self.conf.G_structure = [7, 5, 3, 1, 1, 1]
-        print("Scale Factor: %s \tZSSR: %s \tReal Image: %s" % (('X4' if self.conf.X4 else 'X2'), str(self.conf.do_ZSSR), str(self.conf.real_image)))
+        print("Scale Factor: %s \tKernelGAN: %s \tZSSR: %s \tReal Image: %s" % (('X4' if self.conf.X4 else 'X2'), str(self.conf.cubic == False), str(self.conf.do_ZSSR), str(self.conf.real_image)))
         return self.conf
 
     def clean_file_name(self):

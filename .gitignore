@@ -126,3 +126,8 @@ dmypy.json
 # IDE
 .idea/
 .vscode/
+
+training_data/
+results/
+results_div2krk/
+results*/

@@ -5,7 +5,7 @@ from configs import Config
 from data import DataGenerator
 from kernelGAN import KernelGAN
 from learner import Learner
-
+from util import run_zssr_cubic
 
 def train(conf):
     gan = KernelGAN(conf)
@@ -29,11 +29,15 @@ def main():
     prog.add_argument('--SR', action='store_true', help='when activated - ZSSR is not performed')
     prog.add_argument('--real', action='store_true', help='ZSSRs configuration is for real images')
     prog.add_argument('--noise_scale', type=float, default=1., help='ZSSR uses this to partially de-noise images')
+    prog.add_argument('--cubic', action='store_true', help='when activated - KernalGAN is not performed')
     args = prog.parse_args()
     # Run the KernelGAN sequentially on all images in the input directory
     for filename in os.listdir(os.path.abspath(args.input_dir)):
         conf = Config().parse(create_params(filename, args))
-        train(conf)
+        if args.cubic:
+            run_zssr_cubic(conf)
+        else:
+            train(conf)
     prog.exit(0)
 
 

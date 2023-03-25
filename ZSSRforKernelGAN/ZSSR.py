@@ -3,7 +3,7 @@ from ZSSRforKernelGAN.zssr_configs import Config
 from ZSSRforKernelGAN.zssr_utils import *
 import numpy as np
 import tensorflow as tf
-
+import time
 
 class ZSSR:
     # Basic current state variables initialization / declaration
@@ -117,6 +117,13 @@ class ZSSR:
 
             # Use augmented outputs and back projection to enhance result. Also save the result.
             post_processed_output = self.final_test()
+            # print('~' * 30 + '\nFinal Test ZSSR ...')
+            # start_time = time.time()
+            # for _ in range(100):
+            #     post_processed_output = self.final_test()
+            # runtime = time.time() - start_time
+            # runtime = int(runtime // 100)
+            # print('Completed! runtime=%d:%d\n' % (runtime // 60, runtime % 60) + '~' * 30)
 
             # Keep the results for the next scale factors SR to use as dataset
             self.hr_fathers_sources.append(post_processed_output)
