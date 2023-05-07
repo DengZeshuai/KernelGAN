@@ -10,7 +10,7 @@ try:
 except:
     import imageio
 
-def read_img(img_path):
+def read_img(img_path): # read image in rgb
     img = imageio.imread(img_path)
     # some images have 4 channels, such as DIV2KRK
     if img.shape[2] > 3: img = img[:, :, :3]
@@ -83,29 +83,29 @@ def rgb2ycbcr(img, only_y=True):
     return rlt.astype(in_img_type)
 
 
-def test_one(in_path, gt_path):
+def test_one(args, in_path, gt_path):
     
-    sr_img = read_img(in_path)
-    sr_img_y = rgb2ycbcr(sr_img)
+    sr_img = read_img(in_path) / 255. # convert to [0,1], and aviod round() for int8
+    sr_img_y = rgb2ycbcr(sr_img) * 255.
     
-    hr_img = read_img(gt_path)
-    hr_img_y = rgb2ycbcr(hr_img)
+    hr_img = read_img(gt_path) / 255.
+    hr_img_y = rgb2ycbcr(hr_img) * 255.
 
-    psnr_, ssim_ = calc_psnr_ssim(sr_img_y, hr_img_y)
+    psnr_, ssim_ = calc_psnr_ssim(sr_img_y, hr_img_y, args.scale)
 
     return psnr_, ssim_
 
-def test_all(in_paths, gt_paths):
+def test_all(args, in_paths, gt_paths):
     psnrs, ssims = [], []
     for in_path, gt_path in tqdm(zip(in_paths, gt_paths), ncols=80):
-        psnr_, ssim_ = test_one(in_path, gt_path)
+        psnr_, ssim_ = test_one(args, in_path, gt_path)
         psnrs.append(psnr_)
         ssims.append(ssim_)
 
     return psnrs, ssims
 
 
-def main():
+def main(args):
     in_paths = sorted(glob.glob(os.path.join(args.input_folder, "*", "*.png")))
     gt_paths = sorted(glob.glob(os.path.join(args.gt_folder, "*.png")))
     for in_path, gt_path in zip(in_paths, gt_paths):
@@ -113,7 +113,7 @@ def main():
         gt_name = os.path.basename(gt_path)
         assert in_name == gt_name
 
-    psnrs, ssims = test_all(in_paths, gt_paths)
+    psnrs, ssims = test_all(args, in_paths, gt_paths)
     print("PSNR/SSIM: {:.3f}/{:.4f} ".format(np.mean(psnrs), np.mean(ssims)))
 
 
@@ -123,7 +123,8 @@ if __name__ == '__main__':
                     help='path to test image')
     parser.add_argument('--gt_folder', type=str, default='/mnt/cephfs/home/dengzeshuai/data/sr/DIV2KRK/gt_rename/',
                     help='path to gt image for metric computing')
-    
+    parser.add_argument('--scale', type=int, default=2,
+                    help='the scale of SR, decide how many border pixels to be crop')
     args = parser.parse_args()
     print(args)
-    main()
+    main(args)
