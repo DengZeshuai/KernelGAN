@@ -32,7 +32,9 @@ def main():
     prog.add_argument('--cubic', action='store_true', help='when activated - KernalGAN is not performed')
     args = prog.parse_args()
     # Run the KernelGAN sequentially on all images in the input directory
-    for filename in sorted(os.listdir(os.path.abspath(args.input_dir))):
+    img_paths = sorted(os.listdir(os.path.abspath(args.input_dir)))
+    # img_paths = img_paths[2:3]
+    for filename in img_paths:
         conf = Config().parse(create_params(filename, args))
         if args.cubic:
             run_zssr_cubic(conf)

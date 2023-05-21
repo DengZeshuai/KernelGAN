@@ -107,7 +107,7 @@ def pad_edges(im, edge):
     return zero_padded
 
 
-def clip_extreme(im, percent):
+def clip_extreme(im, percent, threshold=10e-6):
     """Zeroize values below the a threshold and clip all those above"""
     # Sort the image
     im_sorted = np.sort(im.flatten())
@@ -115,7 +115,10 @@ def clip_extreme(im, percent):
     pivot = int(percent * len(im_sorted))
     v_min = im_sorted[pivot]
     # max value will be the next value in the sorted array. if it is equal to the min, a threshold will be added
-    v_max = im_sorted[pivot + 1] if im_sorted[pivot + 1] > v_min else v_min + 10e-6
+    v_max = im_sorted[pivot + 1] if im_sorted[pivot + 1] > v_min else v_min + threshold
+    if v_max > im_sorted[-1]: 
+        v_max = v_min
+        v_min = v_min - threshold
     # Clip an zeroize all the lower values
     return np.clip(im, v_min, v_max) - v_min
 

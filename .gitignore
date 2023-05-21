@@ -131,3 +131,4 @@ training_data/
 results/
 results_div2krk/
 results*/
+*.txt
